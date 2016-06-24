@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.25302.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sa-post-collector", "sa-post-collector\sa-post-collector.csproj", "{48DA45D1-C25F-4F5C-84DF-1BB9F08DB96A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{48DA45D1-C25F-4F5C-84DF-1BB9F08DB96A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48DA45D1-C25F-4F5C-84DF-1BB9F08DB96A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48DA45D1-C25F-4F5C-84DF-1BB9F08DB96A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48DA45D1-C25F-4F5C-84DF-1BB9F08DB96A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
