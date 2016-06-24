@@ -32,6 +32,7 @@ namespace sa_markov_bot
             {
                 Console.WriteLine(newLines[i]);
             }
+            File.AppendAllLines("GeneratedText.txt", newLines);
             Console.ReadLine();
         }
     }

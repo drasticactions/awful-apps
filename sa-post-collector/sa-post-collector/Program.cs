@@ -22,10 +22,9 @@ namespace sa_post_collector
         {
             string username;
             string password;
-            List<string> info = new List<string>();
-            if (File.Exists("users.txt"))
+            List<string> info = File.ReadAllLines("users.txt").ToList();
+            if (info.Any())
             {
-                info = File.ReadAllLines("users.txt").ToList();
                 username = info[0];
                 password = info[1];
             }
