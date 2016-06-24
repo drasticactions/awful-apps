@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MarkovSharp.TokenisationStrategies;
 using System.IO;
 using System.Text.RegularExpressions;
+using CoreTweet;
 
 namespace sa_boosted_twitter_bot
 {
@@ -18,34 +19,70 @@ namespace sa_boosted_twitter_bot
 
         static async Task MainAsync(string[] args)
         {
+            var apiKeys = File.ReadAllLines("api.txt").Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+            string apiKey, apiSecret, accessToken, accessTokenSecret = "";
+            Tokens tokens = null;
+            if (apiKeys.Count > 0)
+            {
+                apiKey = apiKeys[0];
+                apiSecret = apiKeys[1];
+                accessToken = apiKeys[2];
+                accessTokenSecret = apiKeys[3];
+                tokens = CoreTweet.Tokens.Create(apiKey, apiSecret, accessToken, accessTokenSecret);
+            }
+
             var lines = File.ReadAllLines("Boosted.txt");
             var markov = new StringMarkov();
             markov.Learn(lines);
             var result = markov.Walk().First();
             var splitLines = result.Split(new[] {"?", "!"}, StringSplitOptions.None).Where(s => !string.IsNullOrWhiteSpace(s));
-            foreach (var line in splitLines)
+            try
             {
-                var foo = Twitterize(line.Trim());
-                if (foo.Length > 140)
+                foreach (var line in splitLines)
                 {
-                    var charCount = 0;
-                    var bar =
-                        foo.Split(new string[] {" "}, StringSplitOptions.RemoveEmptyEntries)
-                            .GroupBy(w => (charCount += w.Length + 1)/135)
-                            .Select(g => string.Join(" ", g)).ToList();
-                    for (var i = 0; i < bar.Count(); i++)
+                    var foo = Twitterize(line.Trim());
+                    if (foo.Length > 140)
                     {
-                        var totalCount = i + 1;
-                        bar[i] = bar[i] + $" /{totalCount}";
-                        Console.WriteLine($"{FirstLetterToUpper(bar[i])} - {bar[i].Length}");
+                        var charCount = 0;
+                        var bar =
+                            foo.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries)
+                                .GroupBy(w => (charCount += w.Length + 1) / 115)
+                                .Select(g => string.Join(" ", g)).ToList();
+                        for (var i = 0; i < bar.Count(); i++)
+                        {
+                            var totalCount = i + 1;
+                            bar[i] = bar[i] + $" /{totalCount}";
+                            if (tokens != null)
+                            {
+                                TweetLine(tokens, bar[i]);
+                            }
+                            Console.WriteLine($"{bar[i]} - {bar[i].Length}");
+                        }
+                    }
+                    else
+                    {
+                        if (tokens != null)
+                        {
+                            TweetLine(tokens, foo);
+                        }
+                        Console.WriteLine($"{foo} - {foo.Length}");
                     }
                 }
-                else
-                {
-                    Console.WriteLine($"{FirstLetterToUpper(foo)} - {foo.Length}");
-                }
             }
-            Console.ReadLine();
+            catch (Exception)
+            {
+                return;
+            }
+            if (tokens == null)
+            {
+                Console.ReadLine();
+            }
+        }
+
+        static void TweetLine(Tokens tokens, string line)
+        {
+            Console.WriteLine(line.Count());
+            tokens.Statuses.Update(status => line);
         }
 
         static string FirstLetterToUpper(string str)
@@ -89,13 +126,13 @@ namespace sa_boosted_twitter_bot
 
         static string ReplaceMarco(string line)
         {
-            Regex r = new Regex(string.Join("|", Cruz.Select(Regex.Escape).ToArray()));
+            Regex r = new Regex(string.Join("|", Rubio.Select(Regex.Escape).ToArray()));
             return r.Replace(line, "@marcorubio");
         }
 
         static string ReplaceBush(string line)
         {
-            Regex r = new Regex(string.Join("|", Cruz.Select(Regex.Escape).ToArray()));
+            Regex r = new Regex(string.Join("|", Bush.Select(Regex.Escape).ToArray()));
             return r.Replace(line, "@JebBush");
         }
 
