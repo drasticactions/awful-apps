@@ -20,10 +20,22 @@ namespace sa_post_collector
 
         static async Task MainAsync()
         {
-            Console.WriteLine("Enter your Something Awful Username: ");
-            var username = Console.ReadLine();
-            Console.WriteLine("Enter your SA Password: ");
-            var password = ReadPassword();
+            string username;
+            string password;
+            List<string> info = new List<string>();
+            if (File.Exists("users.txt"))
+            {
+                info = File.ReadAllLines("users.txt").ToList();
+                username = info[0];
+                password = info[1];
+            }
+            else
+            {
+                Console.WriteLine("Enter your Something Awful Username: ");
+                username = Console.ReadLine();
+                Console.WriteLine("Enter your SA Password: ");
+                password = ReadPassword();
+            }
             Console.WriteLine("Logging in...");
             var authenticationManager = new AuthenticationManager();
             var result = await authenticationManager.AuthenticateAsync(username, password);
@@ -36,8 +48,23 @@ namespace sa_post_collector
             var webManager = new WebManager(result.AuthenticationCookie);
             var postManager = new PostManager(webManager);
 
-            Console.WriteLine("Enter the SA Thread ID: ");
-            var threadidstring = Console.ReadLine();
+            string threadidstring;
+            string useridstring;
+
+            if (info.Any())
+            {
+                threadidstring = info[2];
+                useridstring = info[3];
+            }
+            else
+            {
+                Console.WriteLine("Enter the SA Thread ID: ");
+                threadidstring = Console.ReadLine();
+                Console.WriteLine("Enter the SA User ID: ");
+                useridstring = Console.ReadLine();
+            }
+
+
             long threadId = 0;
             try
             {
@@ -49,8 +76,7 @@ namespace sa_post_collector
                 return;
             }
 
-            Console.WriteLine("Enter the SA User ID: ");
-            var useridstring = Console.ReadLine();
+
             int userid = 0;
             try
             {
@@ -83,6 +109,8 @@ namespace sa_post_collector
                 var innerTextPosts = postElements.Select(node => node.InnerText);
                 File.AppendAllLines($"{postername} - {Regex.Replace(posts.ForumThread.Name, "[" + Regex.Escape(new string(Path.GetInvalidFileNameChars())) + "]", "_")}.txt", innerTextPosts);
             }
+            Console.WriteLine("Done!");
+            Console.ReadLine();
         }
 
         // From http://stackoverflow.com/questions/29201697/hide-replace-when-typing-a-password-c
